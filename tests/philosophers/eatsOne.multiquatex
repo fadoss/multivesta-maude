@@ -1,0 +1,7 @@
+EatsOne() = if (s.rval("{} |= eats(1)") == 1) then
+	s.rval("steps")
+else
+	# EatsOne()
+fi ;
+
+eval E[ EatsOne() ] ;

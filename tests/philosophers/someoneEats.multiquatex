@@ -1,0 +1,11 @@
+SomeoneEats() = if ((((s.rval("{} |= eats(0)") == 1
+                ||  s.rval("{} |= eats(1)") == 1)
+                ||  s.rval("{} |= eats(2)") == 1)
+                ||  s.rval("{} |= eats(3)") == 1)
+                ||  s.rval("{} |= eats(4)") == 1) then
+	s.rval("steps")
+else
+	# SomeoneEats()
+fi ;
+
+eval E[ SomeoneEats() ] ;

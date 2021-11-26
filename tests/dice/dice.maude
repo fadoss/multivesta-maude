@@ -1,0 +1,68 @@
+***
+*** Dice example, adapted from the MultiVeSta distribution
+***
+
+fmod MODEL-PARAMS is
+	protecting NAT .
+
+	op NUMBEROFFACES : -> Nat .
+	eq NUMBEROFFACES = 6 .
+endfm
+
+fmod FACE is
+	protecting NAT .
+
+	sort Face .
+	op face : Nat -> Face [ctor] .
+endfm
+
+view Face from TRIV to FACE is
+	sort Elt to Face .
+endv
+
+fmod DICE is
+	protecting MAP{Face, Nat} * (
+		sort Map{Face, Nat} to ExtractionsCounter
+	) .
+
+	op initial : Nat -> ExtractionsCounter .
+
+	var N : Nat .
+
+	eq initial(0) = empty .
+	eq initial(s N) = face(N) |-> 0, initial(N) .
+endfm
+
+mod DICE-THROW is
+	protecting DICE .
+
+	vars F N : Nat .
+
+	rl [throw] : face(F) |-> N => face(F) |-> s N .
+endm
+
+smod DICE-STRAT is
+	protecting DICE-THROW .
+	protecting CONVERSION .
+	protecting MODEL-PARAMS .
+
+	strat unithrow @ ExtractionsCounter .
+
+	var F : Nat .
+	var FF : Float .
+
+	sd unithrow := sample FF := uniform(0.0, float(NUMBEROFFACES)) in throw[F <- rat(floor(FF))] .
+endsm
+
+smod ANALYSYS is
+	protecting DICE-STRAT .
+
+	*** Number of extraction for each face
+	op count : Face ExtractionsCounter -> Float .
+
+	var F : Face .
+	var N : Nat .
+	var C : ExtractionsCounter .
+
+	eq count(F, (F |-> N, C)) = float(N) .
+endsm

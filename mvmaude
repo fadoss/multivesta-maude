@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+#
+# Entry point of the MultiVeStA-Maude integration
+#
+
+import argparse
+import os
+import sys
+
+DEFAULT_JAR_PATH = 'multivesta.jar'
+DEFAULT_BIN_PATH = './multivesta.bin'
+
+parser = argparse.ArgumentParser(description='MultiVeSta-Maude integration')
+
+parser.add_argument('maudefile', help='Maude source file to load')
+parser.add_argument('initial', help='initial term')
+parser.add_argument('query', help='MultiQuaTex query file')
+parser.add_argument('strategy', help='probabilistic strategy', nargs='?', default='')
+parser.add_argument('--module', '-m', metavar='NAME', help='the Maude module for the simulation')
+parser.add_argument('--metamodule', '-M', metavar='TERM', help='a metamodule for the simulation')
+parser.add_argument('--opaque', metavar='LIST', help='list of opaque strategy names', default='')
+parser.add_argument('--method', '-t', metavar='METHOD', help='method for assigning probabilities to the Maude model')
+parser.add_argument('--jar', help='path to the multivesta JAR', default=DEFAULT_JAR_PATH)
+parser.add_argument('--native', help='path to a native image of MultiVeSta')
+
+# Arguments after -- are passed directly to MultiVeSta
+# and they override the defaults provided here
+
+if '--' in sys.argv:
+	index = sys.argv.index('--')
+	own_args = sys.argv[1:index]
+	extra_args = sys.argv[index+1:]
+else:
+	own_args = sys.argv[1:]
+	extra_args = []
+
+args = parser.parse_args(own_args)
+
+script_dir = os.path.dirname(__file__)
+
+# Find MultiVeSta
+if args.native and os.access(args.native, os.X_OK):
+	command = [args.native]
+
+elif args.jar and os.path.exists(args.jar):
+	command = ['java', '-jar', args.jar]
+
+elif args.jar == DEFAULT_JAR_PATH and os.path.exists(os.path.join(script_dir, DEFAULT_JAR_PATH)):
+	command = ['java', '-jar', os.path.join(script_dir, DEFAULT_JAR_PATH)]
+
+else:
+	print(f'MultiVeSta JAR file cannot be found (as {args.jar}, use --jar to specify a different location).\n'
+	      'It can be downloaded from https://github.com/andrea-vandin/MultiVeStA.')
+	sys.exit(1)
+
+multivesta_args = command + [
+	'-c',  # client
+	'-m', os.path.join(script_dir, 'mvmaude.py'),  # model file name (the integration code)
+	'-sm', 'true',  # tell MultiVeSta to check whether the mvmaude.py file exists
+	'-f', args.query,  # file with the input formula or 'simulation' (does not work)
+	'-l', '2',  # number of parallel processes
+	'-sots', '1',  # seed of the seeds (-1 for using the current time)
+	'-sd', 'vesta.python.simpy.SimPyState',  # class name of the state descriptor
+	'-vp', 'true',  # visualize plot
+	'-bs', '30',  # block size (number of simulations before checking confidence interval)
+	'-ds', '10',  # delta list
+	'-a', '0.05',  # alpha
+	'-otherParams', sys.executable  # python binary path
+] + extra_args
+
+# Select the uniform method as default if no strategy is provided
+# or the step method if a strategy is given
+if not args.method:
+	args.method = 'step' if args.strategy else 'uniform'
+
+# mdp-variants of the methods are not allowed
+elif args.method.startswith('mdp-'):
+	args.method = args.method[4:]
+	print('\x1b[33mWarning: methods that generate Markov decision processes are not allowed for '
+	      f'statistical simulation. The {args.method} method will be used instead.\x1b[0m')
+
+# Argument are passed to the integrator using environment variables
+environ = os.environ
+
+environ['MTVMD_FILE'] = args.maudefile
+environ['MTVMD_INITIAL'] = args.initial
+environ['MTVMD_STRATEGY'] = args.strategy
+environ['MTVMD_METHOD'] = args.method
+environ['MTVMD_OPAQUE'] = args.opaque
+
+if args.module:
+	environ['MTVMD_MODULE'] = args.module
+
+if args.metamodule:
+	environ['MTVMD_METAMODULE'] = args.metamodule
+
+os.execvpe(command[0], multivesta_args, os.environ)

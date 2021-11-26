@@ -1,0 +1,34 @@
+***
+*** Dining philosophers problem: parallel strategy
+***
+
+*** philosophers.maude is available at https://github.com/fadoss/strat-examples
+sload philosophers
+
+smod DINNER-EXTRA is
+	protecting DINNER-MCS .
+	protecting SET{Nat} .
+
+	*** A single step under the parity constraint for a given philosopher
+	strat parity : Nat @ Table .
+
+	var  T   : Table .
+	vars L R : List .
+	vars X Y : Obj .
+	var  Id  : Nat .
+	var  S   : Set{Nat} .
+
+	sd parity(Id) := release[Id <- Id] .
+	csd parity(Id) := amatch (ψ | Id | o) ? right[Id <- Id] : left[Id <- Id] if 2 divides Id .
+	csd parity(Id) := amatch (o | Id | ψ) ? left[Id <- Id]  : right[Id <- Id] if not(2 divides Id) .
+
+	*** Round of parallel eating (not very efficiently implemented)
+	strat pparity @ Table .
+	strat parityRound : Set{Nat} @ Table .
+
+	sd pparity := parityRound(empty) ? pparity : idle .
+
+	sd parityRound(S) := (matchrew T s.t. < L (X | Id | Y) R > := T /\ not (Id in S)
+	                       by T using (parity(Id) ; parityRound((S, Id))))
+	                     or-else (match T s.t. S =/= empty) .
+endsm
