@@ -1,7 +1,7 @@
 PFace(face) = if ( s.rval("steps") >= 1 ) then s.rval(face) else # PFace(face) fi ;
-eval E[ PFace("count(face(0), {})") ] ;
-eval E[ PFace("count(face(1), {})") ] ;
-eval E[ PFace("count(face(2), {})") ] ;
-eval E[ PFace("count(face(3), {})") ] ;
-eval E[ PFace("count(face(4), {})") ] ;
-eval E[ PFace("count(face(5), {})") ] ;
+eval E[ PFace("count(face(0), C)") ] ;
+eval E[ PFace("count(face(1), C)") ] ;
+eval E[ PFace("count(face(2), C)") ] ;
+eval E[ PFace("count(face(3), C)") ] ;
+eval E[ PFace("count(face(4), C)") ] ;
+eval E[ PFace("count(face(5), C)") ] ;

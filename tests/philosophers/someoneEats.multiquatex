@@ -1,8 +1,8 @@
-SomeoneEats() = if ((((s.rval("{} |= eats(0)") == 1
-                ||  s.rval("{} |= eats(1)") == 1)
-                ||  s.rval("{} |= eats(2)") == 1)
-                ||  s.rval("{} |= eats(3)") == 1)
-                ||  s.rval("{} |= eats(4)") == 1) then
+SomeoneEats() = if ((((s.rval("T |= eats(0)") == 1
+                ||  s.rval("T |= eats(1)") == 1)
+                ||  s.rval("T |= eats(2)") == 1)
+                ||  s.rval("T |= eats(3)") == 1)
+                ||  s.rval("T |= eats(4)") == 1) then
 	s.rval("steps")
 else
 	# SomeoneEats()

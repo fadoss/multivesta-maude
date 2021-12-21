@@ -22,3 +22,5 @@ In addition, there are the following options:
 * `strategy-full` does the same as `strategy` but respecting the semantics of the strategy. The full reachable graph will be expanded before taking the first step.
 
 In principle, the given strategy must be free of unquantified nondeterminism. The `strategy` method resolves nondeterministic choices uniformly at random, and the other methods may choose one option arbitrarily (issuing a warning or even failing in `strategy-full`).
+
+MultiQuaTeX queries may evaluate Maude terms with the `s.reval` function. These terms should be written as strings, reduce to a Boolean, integer, or floating-point values, and they may contain at most one distinct variable, which will be substituted by the current state of the simulation. The strings `time`, `steps`, and `completed` are directly interpreted by MultiVeSta as the current simulation time, the number of steps, and whether the simulation is completed.

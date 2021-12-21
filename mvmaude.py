@@ -21,6 +21,39 @@ def fatal_error(message):
 	os.kill(os.getppid(), signal.SIGTERM)
 
 
+def collect_vars(term, varset):
+	"""Find a variable in the term"""
+
+	for arg in term.arguments():
+		if arg.isVariable():
+			varset.add(arg)
+		else:
+			collect_vars(arg, varset)
+
+
+def parse_hole_term(module, term_str):
+	"""Parse a term with a single variable"""
+
+	term = module.parseTerm(term_str)
+
+	if term is None:
+		return None, None
+
+	# Collect all variables in the term
+	varset = set()
+	collect_vars(term, varset)
+
+	if len(varset) > 1:
+		print(f'\x1b[33mWarning (simulator): the observation "{message}"'
+		      'contains more than one variable.\x1b[0m')
+
+	elif not varset:
+		return term, None
+
+	# We do not check whether the variable is in the appropriate kind
+	return term, varset.pop()
+
+
 class BaseSimulator:
 	"""Base class for all Maude-based simulators"""
 
@@ -36,7 +69,8 @@ class BaseSimulator:
 
 		self.bool_sort = self.module.findSort('Bool')
 		self.true = self.module.parseTerm('true', self.bool_sort.kind())
-		self.state_var = self.module.parseTerm(f'S:{self.initial.getSort().kind()}')
+
+		self.obs_cache = {}  # Cache of parsed observations
 
 	def setSimulatorForNewSimulation(self, random_seed):
 		"""Restart simulator"""
@@ -61,8 +95,11 @@ class BaseSimulator:
 	def rval(self, observation):
 		"""Evaluate observation on the current state of the simulation"""
 
-		t = self.module.parseTerm(observation.replace('{}', str(self.state_var)))
-		subs = maude.Substitution({self.state_var: self.state})
+		t, var = self.obs_cache.get(observation, (None, None))
+		if not t:
+			t, var = parse_hole_term(self.module, observation)
+			self.obs_cache[observation] = (t, var)
+		subs = maude.Substitution({var: self.state})
 		t = subs.instantiate(t)
 		t.reduce()
 

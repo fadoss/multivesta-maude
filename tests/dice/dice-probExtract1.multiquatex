@@ -1,2 +1,2 @@
-PFace() = if ( s.rval("steps") >= 1.0 ) then s.rval("count(face(0), {})") else # PFace() fi ;
+PFace() = if ( s.rval("steps") >= 1.0 ) then s.rval("count(face(0), C)") else # PFace() fi ;
 eval E[ PFace() ] ;
