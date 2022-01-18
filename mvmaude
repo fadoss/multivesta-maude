@@ -19,7 +19,7 @@ parser.add_argument('strategy', help='probabilistic strategy', nargs='?', defaul
 parser.add_argument('--module', '-m', metavar='NAME', help='the Maude module for the simulation')
 parser.add_argument('--metamodule', '-M', metavar='TERM', help='a metamodule for the simulation')
 parser.add_argument('--opaque', metavar='LIST', help='list of opaque strategy names', default='')
-parser.add_argument('--method', '-t', metavar='METHOD', help='method for assigning probabilities to the Maude model')
+parser.add_argument('--method', '-t', '--assign', metavar='METHOD', help='method for assigning probabilities to the Maude model')
 parser.add_argument('--jar', help='path to the multivesta JAR', default=DEFAULT_JAR_PATH)
 parser.add_argument('--native', help='path to a native image of MultiVeSta')
 

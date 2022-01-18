@@ -169,7 +169,7 @@ class UmaudemcSimulator(BaseSimulator):
 
 		self.graph.strategyControlled = strategy is not None
 
-		self.assigner, _ = pb.get_assigner(initial.symbol().getModule(), assigner)
+		self.assigner, _ = pb.get_local_assigner(initial.symbol().getModule(), assigner)
 
 	def setSimulatorForNewSimulation(self, random_seed):
 		"""Restart simulator"""
@@ -251,7 +251,7 @@ class StrategyDTMCSimulator(BaseSimulator):
 	def performOneStepOfSimulation(self):
 		"""Perform a step of the simulation"""
 
-		nd_opts, qt_opts = len(self.node.children), len(self.node.child_choices)
+		nd_opts, qt_opts, next_node = len(self.node.children), len(self.node.child_choices), None
 
 		if nd_opts + qt_opts > 1:
 			print('\x1b[33mUnquantified nondeterministic choices are present in the strategy.\x1b[0m')

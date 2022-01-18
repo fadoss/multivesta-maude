@@ -4,7 +4,7 @@ The `mvmaude` tool integrates the probabilistic Maude strategy language into the
 
 * [Java](https://openjdk.java.net) and the [MultiVeSta](https://github.com/andrea-vandin/MultiVeStA/wiki) tool (the `multivesta.jar` file), which can be downloaded from its [website](https://github.com/andrea-vandin/MultiVeStA/wiki/Integration-with-Python-model-simulator).
 * [Python](https://www.python.org) 3.7 or greater and the [`maude`](https://pypi.org/project/maude) Python library. It can be installed with `pip install maude`.
-* For any strategy-based assignment method except `step` (see below), the [`umaudemc`](https://github.com/fadoss/umaudemc) tool is required. It can be downloaded as a package from [here](https://github.com/fadoss/umaudemc/releases/tag/latest) and installed with `pip`.
+* For any assignment method except `step` (see below), the [`umaudemc`](https://github.com/fadoss/umaudemc) tool is required. It can be installed with `pip install umaudemc`.
 
 It is used as follows:
 
@@ -24,3 +24,5 @@ In addition, there are the following options:
 In principle, the given strategy must be free of unquantified nondeterminism. The `strategy` method resolves nondeterministic choices uniformly at random, and the other methods may choose one option arbitrarily (issuing a warning or even failing in `strategy-full`).
 
 MultiQuaTeX queries may evaluate Maude terms with the `s.reval` function. These terms should be written as strings, reduce to a Boolean, integer, or floating-point values, and they may contain at most one distinct variable, which will be substituted by the current state of the simulation. The strings `time`, `steps`, and `completed` are directly interpreted by MultiVeSta as the current simulation time, the number of steps, and whether the simulation is completed.
+
+More information can be found in the model checkers' [manual](https://maude.ucm.es/strategies/modelchecker-manual.pdf).
