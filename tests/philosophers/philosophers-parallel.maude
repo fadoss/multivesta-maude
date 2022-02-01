@@ -31,4 +31,11 @@ smod DINNER-EXTRA is
 	sd parityRound(S) := (matchrew T s.t. < L (X | Id | Y) R > := T /\ not (Id in S)
 	                       by T using (parity(Id) ; parityRound((S, Id))))
 	                     or-else (match T s.t. S =/= empty) .
+
+	*** Parallel eating where forks are released before each round (otherwise, in
+	*** pparity, the fork released by a philosopher is always taken by his neighbor)
+	strats pparityr parityRoundR @ Table .
+
+	sd pparityr := parityRoundR ? pparityr : idle .
+	sd parityRoundR := release ! ; parityRound(empty) .
 endsm

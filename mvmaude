@@ -63,7 +63,6 @@ multivesta_args = command + [
 	'-sd', 'vesta.python.simpy.SimPyState',  # class name of the state descriptor
 	'-vp', 'true',  # visualize plot
 	'-bs', '30',  # block size (number of simulations before checking confidence interval)
-	'-ds', '10',  # delta list
 	'-a', '0.05',  # alpha
 	'-otherParams', sys.executable  # python binary path
 ] + extra_args
