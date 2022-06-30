@@ -44,7 +44,7 @@ def parse_hole_term(module, term_str):
 	collect_vars(term, varset)
 
 	if len(varset) > 1:
-		print(f'\x1b[33mWarning (simulator): the observation "{message}"'
+		print(f'\x1b[33mWarning (simulator): the observation "{term_str}"'
 		      'contains more than one variable.\x1b[0m')
 
 	elif not varset:
@@ -169,7 +169,10 @@ class UmaudemcSimulator(BaseSimulator):
 
 		self.graph.strategyControlled = strategy is not None
 
-		self.assigner, _ = pb.get_local_assigner(initial.symbol().getModule(), assigner)
+		self.assigner, found = pb.get_local_assigner(initial.symbol().getModule(), assigner)
+
+		if self.assigner is None and not found:
+			fatal_error(f'Unknown probability assignment method {assigner}.')
 
 	def setSimulatorForNewSimulation(self, random_seed):
 		"""Restart simulator"""
@@ -197,8 +200,7 @@ class StrategyPathSimulator(BaseSimulator):
 	def __init__(self, module, initial, strategy=None, assigner='uniform'):
 		super().__init__(initial)
 
-		from random_runner import RandomRunner
-		from umaudemc.pyslang import StratCompiler
+		from umaudemc.pyslang import StratCompiler, RandomRunner
 
 		ml = maude.getModule('META-LEVEL')
 		sc = StratCompiler(module, ml, use_notify=True, ignore_one=True)
@@ -228,7 +230,6 @@ class StrategyDTMCSimulator(BaseSimulator):
 	def __init__(self, module, initial, strategy=None, assigner='uniform'):
 		super().__init__(initial)
 
-		from random_runner import RandomRunner
 		from umaudemc.pyslang import StratCompiler, MarkovRunner, BadProbStrategy
 
 		ml = maude.getModule('META-LEVEL')
@@ -319,7 +320,7 @@ if __name__ == '__main__':
 		m = mt.downModule()
 
 	if m is None:
-		fatal_error(f'Error (simulator): cannot use "{module_text}" metamodule.')
+		fatal_error(f'Error (simulator): cannot use "{metamodule_text}" metamodule.')
 
 	t = m.parseTerm(initial_text)
 

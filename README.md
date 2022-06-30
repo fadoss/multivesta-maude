@@ -9,7 +9,7 @@ The `mvmaude` tool integrates the probabilistic Maude strategy language into the
 It is used as follows:
 
 ```bash
-$ ./mvmaude <Maude file> <initial term> [<strategy>] <MultiQuaTex query file> [--method <method>]
+$ ./mvmaude <Maude file> <initial term> [<strategy>] <MultiQuaTEx query file> [--method <method>]
 ```
 
 The `--help` flag can be passed to show more command line options. Arguments after `--` are directly passed to MultiVeSta (the list of options of this tool can be obtained with `java -jar multivesta.jar -c -help`). Adding the directory containing `mvmaude` to the system path would allow invoking this command from other locations.
@@ -23,6 +23,6 @@ In addition, there are the following options:
 
 In principle, the given strategy must be free of unquantified nondeterminism. The `strategy` method resolves nondeterministic choices uniformly at random, and the other methods may choose one option arbitrarily (issuing a warning or even failing in `strategy-full`).
 
-MultiQuaTeX queries may evaluate Maude terms with the `s.reval` function. These terms should be written as strings, reduce to a Boolean, integer, or floating-point values, and they may contain at most one distinct variable, which will be substituted by the current state of the simulation. The strings `time`, `steps`, and `completed` are directly interpreted by MultiVeSta as the current simulation time, the number of steps, and whether the simulation is completed.
+MultiQuaTEx queries may evaluate Maude terms with the `s.rval` function. These terms should be written as strings, reduce to a Boolean, integer, or floating-point values, and they may contain at most one distinct variable, which will be substituted by the current state of the simulation. The strings `time`, `steps`, and `completed` are directly interpreted by MultiVeSta as the current simulation time, the number of steps, and whether the simulation is completed.
 
-More information can be found in the model checkers' [manual](https://maude.ucm.es/strategies/modelchecker-manual.pdf).
+More information can be found in the model checkers' [manual](https://maude.ucm.es/strategies/modelchecker-manual.pdf). This manual also describes the `scheck` command of the [`umaudemc`](https://github.com/fadoss/umaudemc) tool as an alternative to estimate QuaTEx queries under the same probability assignment methods.

@@ -58,12 +58,14 @@ multivesta_args = command + [
 	'-m', os.path.join(script_dir, 'mvmaude.py'),  # model file name (the integration code)
 	'-sm', 'true',  # tell MultiVeSta to check whether the mvmaude.py file exists
 	'-f', args.query,  # file with the input formula or 'simulation' (does not work)
-	'-l', '2',  # number of parallel processes
+	'-l', '1',  # number of parallel processes
 	'-sots', '1',  # seed of the seeds (-1 for using the current time)
 	'-sd', 'vesta.python.simpy.SimPyState',  # class name of the state descriptor
 	'-vp', 'true',  # visualize plot
 	'-bs', '30',  # block size (number of simulations before checking confidence interval)
 	'-a', '0.05',  # alpha
+	'-d1', '1.0',  # maximum diameter of the confidence interval (should be adjusted)
+	'-verboseServers', 'false',  # less verbose servers
 	'-otherParams', sys.executable  # python binary path
 ] + extra_args
 
