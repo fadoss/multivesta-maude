@@ -7,5 +7,5 @@ if [ -z "$MVMAUDE" ]; then
 	MVMAUDE=mvmaude
 fi
 
-"$MVMAUDE" dice.maude 'initial(6)' dice-probExtract1.multiquatex -- -ds 0.05
+"$MVMAUDE" dice.maude 'initial(6)' dice-probExtract1.multiquatex -- -d1 0.05
 "$MVMAUDE" dice.maude 'initial(6)' dice-probExtractEachFace.multiquatex

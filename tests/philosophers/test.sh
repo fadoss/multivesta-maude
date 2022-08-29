@@ -10,7 +10,7 @@ fi
 ## Rounds with one action per philosopher (this forces the order of actions too much,
 ## since the fork released by a philosopher will be necessarily taken by his neighbor)
 
-# Estimated time when the first phisolopher eats
+# Estimated time when the first philosophers eats
 "$MVMAUDE" philosophers-parallel.maude 'initial(5)' someoneEats.multiquatex pparity --opaque parityRound -t uniform -- -d1 0.4
 "$MVMAUDE" philosophers-parallel.maude 'initial(5)' someoneEats.multiquatex parity -t uniform -- -d1 0.4
 

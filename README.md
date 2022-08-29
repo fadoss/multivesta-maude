@@ -23,6 +23,6 @@ In addition, there are the following options:
 
 In principle, the given strategy must be free of unquantified nondeterminism. The `strategy` method resolves nondeterministic choices uniformly at random, and the other methods may choose one option arbitrarily (issuing a warning or even failing in `strategy-full`).
 
-MultiQuaTEx queries may evaluate Maude terms with the `s.rval` function. These terms should be written as strings, reduce to a Boolean, integer, or floating-point values, and they may contain at most one distinct variable, which will be substituted by the current state of the simulation. The strings `time`, `steps`, and `completed` are directly interpreted by MultiVeSta as the current simulation time, the number of steps, and whether the simulation is completed.
+MultiQuaTEx queries may evaluate Maude terms with the `s.rval` function. These terms should be written as strings, reduce to a Boolean, integer, or floating-point values, and they may contain at most one distinct variable, which will be substituted by the current state of the simulation. The strings `time`, `steps`, and `completed` are directly interpreted by MultiVeSta as the current simulation time, the number of steps, and whether the simulation is complete.
 
 More information can be found in the model checkers' [manual](https://maude.ucm.es/strategies/modelchecker-manual.pdf). This manual also describes the `scheck` command of the [`umaudemc`](https://github.com/fadoss/umaudemc) tool as an alternative to estimate QuaTEx queries under the same probability assignment methods.

@@ -127,7 +127,7 @@ class StrategyStepSimulator(BaseSimulator):
 
 		if next_state is not None:
 			self.state = next_state
-			self.time  += 1
+			self.time += 1
 
 	def performWholeSimulation(self):
 		"""Perform a complete simulation (until a normal form)"""
@@ -183,8 +183,6 @@ class UmaudemcSimulator(BaseSimulator):
 	def performOneStepOfSimulation(self):
 		"""Perform a step of the simulation"""
 
-		solutions, index = [], 0
-
 		successors = all_children(self.graph, self.state_nr)
 
 		if successors:
@@ -197,7 +195,7 @@ class UmaudemcSimulator(BaseSimulator):
 class StrategyPathSimulator(BaseSimulator):
 	"""Simulator based on the strategy where steps are rewrites"""
 
-	def __init__(self, module, initial, strategy=None, assigner='uniform'):
+	def __init__(self, module, initial, strategy=None):
 		super().__init__(initial)
 
 		from umaudemc.pyslang import StratCompiler, RandomRunner
@@ -206,7 +204,7 @@ class StrategyPathSimulator(BaseSimulator):
 		sc = StratCompiler(module, ml, use_notify=True, ignore_one=True)
 		p = sc.compile(ml.upStrategy(strategy))
 
-		self.runner = RandomRunner(p, t)
+		self.runner = RandomRunner(p, initial)
 
 	def setSimulatorForNewSimulation(self, random_seed):
 		"""Restart simulator"""
@@ -227,7 +225,7 @@ class StrategyPathSimulator(BaseSimulator):
 class StrategyDTMCSimulator(BaseSimulator):
 	"""Simulator based on the strategy where steps are rewrites"""
 
-	def __init__(self, module, initial, strategy=None, assigner='uniform'):
+	def __init__(self, module, initial, strategy=None):
 		super().__init__(initial)
 
 		from umaudemc.pyslang import StratCompiler, MarkovRunner, BadProbStrategy
@@ -270,6 +268,41 @@ class StrategyDTMCSimulator(BaseSimulator):
 			self.time += 1
 
 
+class PMaudeSimulator(BaseSimulator):
+	"""Python-based PMaude simulator"""
+
+	def __init__(self, module, initial, strategy):
+		super().__init__(initial)
+
+		# Construct a PMAude simulator of umaudemc
+		from umaudemc.simulators import PMaudeSimulator as UmaudemcPMaude
+		self.simulator = UmaudemcPMaude.new(module, initial, strategy)
+
+		if self.simulator is None:
+			fatal_error('Error (simulator): the given specification does not adhere to the PMaude convention.')
+
+		# Delegate on the simulator from umaudemc
+		self.performOneStepOfSimulation = self.simulator.next_step
+		self.rval = self.simulator.rval
+		self.getTime = self.simulator.get_time
+
+	def setSimulatorForNewSimulation(self, random_seed):
+		"""Restart simulator"""
+
+		super().setSimulatorForNewSimulation(random_seed)
+		sim = self.simulator
+
+		# Here we do not delegate on self.simulator to obey the random seed
+		# but the code is essentially the same
+		if sim.random:
+			sim.random.copy().reduce()
+		maude.setRandomSeed(random_seed)
+
+		sim.state = sim.initial.copy()
+		sim.state.rewrite()
+		sim.step = 0
+
+
 def getenv_required(name):
 	"""Get the value of an environment variable and terminate if it does not exists"""
 
@@ -281,7 +314,8 @@ def getenv_required(name):
 	return value
 
 
-if __name__ == '__main__':
+def main():
+	"""Entry point"""
 	import argparse
 
 	parser = argparse.ArgumentParser(description='MultiVeSta interface to the Maude strategy language')
@@ -291,8 +325,9 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	print(f'Python engine: expecting connection with java on port: {args.port} and callback connection on port {args.cb_port}.')
-	gateway = JavaGateway(start_callback_server=True, 
+	print(f'Python engine: expecting connection with java on port: {args.port} '
+	      f'and callback connection on port {args.cb_port}.')
+	gateway = JavaGateway(start_callback_server=True,
 	                      gateway_parameters=GatewayParameters(port=args.port),
 	                      callback_server_parameters=CallbackServerParameters(port=args.cb_port))
 
@@ -346,7 +381,14 @@ if __name__ == '__main__':
 	elif method_text == 'strategy-full':
 		simulator = StrategyDTMCSimulator(m, t, s)
 
+	elif method_text == 'pmaude':
+		simulator = PMaudeSimulator(m, t, strategy_text)
+
 	else:
 		simulator = UmaudemcSimulator(t, s, method_text, opaque=opaque)
 
 	gateway.entry_point.playWithState(simulator)
+
+
+if __name__ == '__main__':
+	main()
