@@ -199,12 +199,14 @@ class StrategyPathSimulator(BaseSimulator):
 		super().__init__(initial)
 
 		from umaudemc.pyslang import StratCompiler, RandomRunner
+		from umaudemc import usermsgs
 
 		ml = maude.getModule('META-LEVEL')
 		sc = StratCompiler(module, ml, use_notify=True, ignore_one=True)
 		p = sc.compile(ml.upStrategy(strategy))
 
 		self.runner = RandomRunner(p, initial)
+		self.runner.detect_nondeterminism(usermsgs)
 
 	def setSimulatorForNewSimulation(self, random_seed):
 		"""Restart simulator"""
@@ -375,10 +377,10 @@ def main():
 	if method_text == 'step':
 		simulator = StrategyStepSimulator(t, s)
 
-	elif method_text == 'strategy':
+	elif method_text == 'strategy-fast':
 		simulator = StrategyPathSimulator(m, t, s)
 
-	elif method_text == 'strategy-full':
+	elif method_text == 'strategy':
 		simulator = StrategyDTMCSimulator(m, t, s)
 
 	elif method_text == 'pmaude':
